@@ -79,6 +79,7 @@ export const generateTags = async (content) => {
 
     // 미션: AI가 출력한 태그들의 텍스트를 배열로 변환하여 반환하기
     const tagText = response.choices[0].message.content;
+    console.log("🚀 ~ generateTags ~ tagText:", tagText);
     const tags = tagText.split(",");
     return tags;
   } catch (error) {
