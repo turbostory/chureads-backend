@@ -2,6 +2,7 @@
 import express from "express";
 import { ObjectId } from "mongodb";
 import { generateTags } from "../services/tagService.js";
+import { broadcastToClients } from "../sse/sseManager.js";
 
 // Express에서 제공하는 미니 애플리케이션 객체를 생성
 const postRouter = express.Router();
@@ -63,8 +64,19 @@ postRouter.post("/", async (req, res) => {
       createdAt: new Date(),
     };
 
-    // 데이터베이스에 추라
+    // 데이터베이스에 추가
     const result = await collection.insertOne(newItem);
+
+    // TODO: 🔔🔔새 게시물 알림을 모든 클라이언트에게 전송
+    broadcastToClients("newPost", {
+      postId: result.insertedId,
+      userName: newItem.userName,
+      content:
+        newItem.content.substring(0, 20) +
+        (newItem.content.length > 20 ? "..." : ""),
+      createdAt: newItem.createdAt,
+      message: `${newItem.userName}님이 새 글을 작성했습니다.`,
+    });
 
     // 응답
     res.status(200).json(result);
