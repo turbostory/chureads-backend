@@ -113,6 +113,31 @@ postRouter.put("/:id", async (req, res) => {
   }
 });
 
+// PUT /posts/:id - like
+postRouter.put("/:id", async (req, res) => {
+  try {
+    // TODO: 특정 게시물 수정
+    const { id } = req.params;
+    const editedPost = req.body;
+
+    const result = await collection.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: { content: editedPost.content, updatedAt: new Date() },
+      }
+    );
+    //응답
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
 // DELETE /posts/:id - 특정 게시물 삭제
 postRouter.delete("/:id", async (req, res) => {
   // URL 파라미터에서 게시물 ID를 받아서 해당 게시물을 삭제
